@@ -71,6 +71,61 @@ public partial class DiscoveryWorkerTests : DiscoveryWorkerTestBase
     }
 
     [Fact]
+    public async Task TestSqlprojFile()
+    {
+        var dependencyId = "Microsoft.SqlServer.Dacpacs.Master";
+        var dependencyVersion = "160.0.0";
+        var resolvedDependencyVersion = "160.2.5";
+        var targetFramework = "netstandard2.1";
+        var expectedDependencies = new List<Dependency>()
+        {
+            new Dependency(dependencyId, resolvedDependencyVersion, DependencyType.PackageReference, TargetFrameworks: [targetFramework], IsDirect: true)
+        };
+
+        await TestDiscoveryAsync(
+            packages:
+            [
+                MockNuGetPackage.CreateSimplePackage(dependencyId, dependencyVersion, targetFramework),
+            ],
+            workspacePath: "src",
+            files: new[]
+            {
+                ("src/sample.sqlproj", """
+                    <?xml version="1.0" encoding="utf-8"?>
+                    <Project DefaultTargets="Build">
+                    <Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
+                      <PropertyGroup>
+                      <Name>sample</Name>
+                      <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+                      <ModelCollation>1033, CI</ModelCollation>
+                    </PropertyGroup>
+
+                    <ItemGroup>
+                      <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master" Version="160.*" />
+                    </ItemGroup>
+                    </Project>
+                    """)
+            },
+            expectedResult: new()
+            {
+                Path = "src",
+                Projects = [
+                    new()
+                    {
+                        FilePath = "sample.sqlproj",
+                        TargetFrameworks = [targetFramework],
+                        Dependencies = expectedDependencies.ToImmutableArray(),
+                        Properties = [],
+                        ReferencedProjectPaths = [],
+                        ImportedFiles = [],
+                        AdditionalFiles = [],
+                    }
+                ]
+            }
+        );
+    }
+
+    [Fact]
     public async Task FindDependenciesFromSDKProjectsWithDesktopTFM()
     {
         await TestDiscoveryAsync(
