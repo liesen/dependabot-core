@@ -420,11 +420,21 @@ internal static partial class MSBuildHelper
             );
             return (exitCode, stdOut, stdErr);
         }, logger);
+
+        // TODO(liesen): Lose this workaround once we get msbuild to recognize Microsoft.Build.Sql
+        // msbuild: Could not resolve SDK \"Microsoft.Build.Sql\". Exactly one of the probing messages below indicates why we could not resolve the SDK.
+        if (projectPath.EndsWith(".sqlproj"))
+        {
+            stdOut = "ProjectData::TargetFrameworkMoniker=.NETStandard,Version=v2.1;ProjectData::TargetPlatformMoniker=Windows,Version=7.0\n";
+            exitCode = 0;
+        }
+
         ThrowOnError(stdOut);
         if (exitCode != 0)
         {
             logger.Warn($"Error determining target frameworks.\nSTDOUT:\n{stdOut}\nSTDERR:\n{stdErr}");
         }
+
 
         // There are 2 possible return values:
         //   1. For SDK-style projects with a single TFM and legacy projects the output will look like:
