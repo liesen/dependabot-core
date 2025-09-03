@@ -210,6 +210,7 @@ public partial class DiscoveryWorker : IDiscoveryWorker
                     case ".csproj":
                     case ".fsproj":
                     case ".vbproj":
+                    case ".sqlproj":
                         return true;
                     default:
                         return false;
@@ -263,6 +264,7 @@ public partial class DiscoveryWorker : IDiscoveryWorker
                         case ".csproj":
                         case ".fsproj":
                         case ".vbproj":
+                        case ".sqlproj":
                             // keep this project and check for references
                             expandedProjects.Add(candidateEntryPoint);
                             IEnumerable<string> referencedProjects = ExpandItemGroupFilesFromProject(candidateEntryPoint, "ProjectReference");
