@@ -783,7 +783,8 @@ internal static class SdkProjectDiscovery
             projectEvaluation = build.FindEvaluation(project.EvaluationId);
         }
 
-        if (!File.Exists(projectEvaluation?.ProjectFile))
+        // TODO(liesen): Fix
+        if (!projectEvaluation.Name.EndsWith(".sqlproj") && !File.Exists(projectEvaluation?.ProjectFile))
         {
             // WPF creates temporary projects during evaluation that no longer exist on disk for analysis, but they're not necessary for our purposes.
             return null;
