@@ -73,6 +73,7 @@ public partial class DiscoveryWorkerTests : DiscoveryWorkerTestBase
     [Fact]
     public async Task TestSqlprojFile()
     {
+        var projectPath = "src/sample.sqlproj";
         var dependencyId = "Microsoft.SqlServer.Dacpacs.Master";
         var dependencyVersion = "160.0.0";
         var resolvedDependencyVersion = "160.2.5";
@@ -90,19 +91,19 @@ public partial class DiscoveryWorkerTests : DiscoveryWorkerTestBase
             workspacePath: "src",
             files: new[]
             {
-                ("src/sample.sqlproj", """
+                (projectPath, """
                     <?xml version="1.0" encoding="utf-8"?>
                     <Project DefaultTargets="Build">
                     <Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
                       <PropertyGroup>
-                      <Name>sample</Name>
-                      <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
-                      <ModelCollation>1033, CI</ModelCollation>
-                    </PropertyGroup>
+                        <Name>sample</Name>
+                        <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+                        <ModelCollation>1033, CI</ModelCollation>
+                      </PropertyGroup>
 
-                    <ItemGroup>
-                      <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master" Version="160.*" />
-                    </ItemGroup>
+                      <ItemGroup>
+                        <PackageReference Include="Microsoft.SqlServer.Dacpacs.Master" Version="160.*" />
+                      </ItemGroup>
                     </Project>
                     """)
             },
@@ -115,7 +116,7 @@ public partial class DiscoveryWorkerTests : DiscoveryWorkerTestBase
                         FilePath = "sample.sqlproj",
                         TargetFrameworks = [targetFramework],
                         Dependencies = expectedDependencies.ToImmutableArray(),
-                        Properties = [],
+                        Properties = [new("DSP", "Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider", projectPath), new("ModelCollation", "1033, CI", projectPath), new("Name", "sample", projectPath)],
                         ReferencedProjectPaths = [],
                         ImportedFiles = [],
                         AdditionalFiles = [],
