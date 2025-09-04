@@ -352,6 +352,24 @@ internal static class SdkProjectDiscovery
             );
         }
 
+        // TODO(liesen): Fixup path to project file (it's different from what's in the binlog)
+        void FixProjectPath<T>(Dictionary<string, T> x)
+        {
+            if (x.Count > 0 && x.Remove(x.Keys.First(), out var value))
+            {
+                x[startingProjectPath] = value;
+            }
+        }
+
+        FixProjectPath(packagesPerProject);
+        FixProjectPath(explicitPackageVersionsPerProject);
+        FixProjectPath(packagesReplacedBySdkPerProject);
+        FixProjectPath(topLevelPackagesPerProject);
+        FixProjectPath(resolvedProperties);
+        FixProjectPath(packageDependencies);
+        FixProjectPath(importedFiles);
+        FixProjectPath(additionalFiles);
+
         // and done
         var projectDiscoveryResults = await BuildResults(
             repoRootPath,
