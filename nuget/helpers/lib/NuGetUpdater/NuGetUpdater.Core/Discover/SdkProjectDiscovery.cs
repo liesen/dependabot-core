@@ -446,6 +446,8 @@ internal static class SdkProjectDiscovery
             var propertiesForProject = resolvedProperties.GetOrAdd(projectPath, () => new(StringComparer.OrdinalIgnoreCase));
             var assetsJson = new Lazy<JsonElement?>(() =>
             {
+                return null; // TODO(liesen): Fix this
+
                 if (propertiesForProject.TryGetValue("ProjectAssetsFile", out var assetsFilePath))
                 {
                     var assetsContent = File.ReadAllText(assetsFilePath);
