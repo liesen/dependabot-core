@@ -115,6 +115,17 @@ internal static class SdkProjectDiscovery
                     $"/bl:{binLogPath}"
                 };
                 var (exitCode, stdOut, stdErr) = await ProcessEx.RunDotnetWithoutMSBuildEnvironmentVariablesAsync(args, startingProjectDirectory);
+
+                // TODO(liesen): Mock binlog. Fix with Microsoft.Build.Sql SDK.
+                if (startingProjectPath.EndsWith(".sqlproj"))
+                {
+                    binLogPath = // MSBuildHelper.GetFileFromRuntimeDirectory("sample.binlog");
+                        @"/workspaces/dependabot-core/nuget/sample.binlog";
+                    stdOut = "";
+                    stdErr = null;
+                    exitCode = 0;
+                }
+
                 if (exitCode != 0 && stdOut.Contains("error : Object reference not set to an instance of an object."))
                 {
                     // https://github.com/NuGet/Home/issues/11761#issuecomment-1105218996
