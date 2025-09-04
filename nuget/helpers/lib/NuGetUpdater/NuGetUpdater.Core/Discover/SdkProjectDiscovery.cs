@@ -326,7 +326,11 @@ internal static class SdkProjectDiscovery
             {
                 try
                 {
-                    File.Delete(binLogPath);
+                    // TODO(liesen): Don't remove binlog from sqlproj (WIP)
+                    if (!startingProjectPath.EndsWith(".sqlproj"))
+                    {
+                        File.Delete(binLogPath);
+                    }
                 }
                 catch
                 {
